@@ -22,8 +22,20 @@ import TagChips from './TagChips.jsx';
 export default function PostCard({ post }) {
   return (
     <Card
-      elevation={2}
-      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      elevation={0}
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '0 12px 36px rgba(0,0,0,0.5)'
+              : '0 12px 36px rgba(0,0,0,0.12)',
+        },
+      }}
     >
       <CardActionArea
         component={RouterLink}

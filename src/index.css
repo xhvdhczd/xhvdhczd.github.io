@@ -7,38 +7,84 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
+ * 全局基础排版与细节（苹果 / land-book 风克制排版）
+ * 平滑滚动、柔和选区色、克制的 focus ring、链接 hover 下划线。
+ * ------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgba(0, 113, 227, 0.16);
+  color: inherit;
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(41, 151, 255, 0.24);
+}
+
+a {
+  color: #0071e3;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(0, 113, 227, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+[data-theme='dark'] :focus-visible {
+  outline-color: rgba(41, 151, 255, 0.6);
+}
+
+/* ---------------------------------------------------------------------------
  * Markdown 正文排版样式
- * 由于 Tailwind preflight 已关闭，这里补充基础排版，保证文章可读性。
+ * Tailwind preflight 已关闭，这里补充基础排版，保证文章可读性。
  * ------------------------------------------------------------------------- */
 .markdown-body {
-  font-size: 1rem;
+  font-size: 1.05rem;
   line-height: 1.75;
+  color: inherit;
   word-wrap: break-word;
+  max-width: 720px;
 }
 
 .markdown-body > *:first-child {
   margin-top: 0;
 }
 
+.markdown-body > *:last-child {
+  margin-bottom: 0;
+}
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
 .markdown-body h4 {
-  margin: 1.6em 0 0.6em;
+  margin: 1.8em 0 0.7em;
   font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.3;
+  color: inherit;
 }
 
 .markdown-body h1 {
-  font-size: 1.9rem;
-  border-bottom: 1px solid rgba(125, 125, 125, 0.3);
+  font-size: 2rem;
+  letter-spacing: -0.02em;
   padding-bottom: 0.3em;
+  border-bottom: 1px solid rgba(125, 125, 125, 0.18);
 }
 
 .markdown-body h2 {
-  font-size: 1.5rem;
-  border-bottom: 1px solid rgba(125, 125, 125, 0.2);
+  font-size: 1.55rem;
   padding-bottom: 0.25em;
+  border-bottom: 1px solid rgba(125, 125, 125, 0.14);
 }
 
 .markdown-body h3 {
@@ -46,70 +92,100 @@
 }
 
 .markdown-body p {
-  margin: 0.9em 0;
+  margin: 1.1em 0;
 }
 
 .markdown-body a {
-  color: #0058f8;
+  color: #0071e3;
   text-decoration: none;
+  border-bottom: 1px solid rgba(0, 113, 227, 0.3);
 }
 
 .markdown-body a:hover {
-  text-decoration: underline;
+  border-bottom-color: #0071e3;
+}
+
+[data-theme='dark'] .markdown-body a {
+  color: #2997ff;
+  border-bottom-color: rgba(41, 151, 255, 0.35);
+}
+
+[data-theme='dark'] .markdown-body a:hover {
+  border-bottom-color: #2997ff;
 }
 
 .markdown-body ul,
 .markdown-body ol {
   padding-left: 1.6em;
-  margin: 0.9em 0;
+  margin: 1.1em 0;
 }
 
 .markdown-body li {
-  margin: 0.3em 0;
+  margin: 0.4em 0;
 }
 
-/* 引用块：NES 蓝左边框 + 半透明蓝底，硬直角 */
+/* 引用块：左侧 primary 细边框 + 柔和底色，圆角 */
 .markdown-body blockquote {
-  margin: 1em 0;
-  padding: 0.4em 1em;
-  border-left: 4px solid #0058f8;
-  background: rgba(0, 88, 248, 0.12);
-  color: rgba(0, 0, 0, 0.75);
+  margin: 1.4em 0;
+  padding: 0.6em 1.2em;
+  border-left: 3px solid #0071e3;
+  background: rgba(0, 113, 227, 0.06);
+  border-radius: 8px;
+  color: inherit;
 }
 
-/* 图片像素化：保留硬边，不用圆角 */
+[data-theme='dark'] .markdown-body blockquote {
+  border-left-color: #2997ff;
+  background: rgba(41, 151, 255, 0.1);
+}
+
+/* 图片：柔和圆角 + 细边框 + 分层阴影 */
 .markdown-body img {
   max-width: 100%;
   height: auto;
-  border-radius: 0;
-  image-rendering: pixelated;
+  border-radius: 12px;
   display: block;
-  margin: 1em 0;
-  border: 2px solid rgba(0, 0, 0, 0.35);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+  margin: 1.4em 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* 行内代码：硬边框 + 偏移阴影，无圆角 */
+[data-theme='dark'] .markdown-body img {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* 行内代码：柔和底色 + 细边框 + 圆角 */
 .markdown-body code {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 0.9em;
+  font-size: 0.88em;
   padding: 0.15em 0.4em;
-  border-radius: 0;
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  background: rgba(125, 125, 125, 0.18);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(125, 125, 125, 0.1);
 }
 
-/* 代码块：硬边框 + 偏移阴影，无圆角（高亮主题保持 atom-one-dark） */
+[data-theme='dark'] .markdown-body code {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* 代码块：柔和底色 + 细边框 + 圆角（高亮主题保持 atom-one-dark） */
 .markdown-body pre {
-  margin: 1.1em 0;
-  border-radius: 0;
+  margin: 1.4em 0;
+  border-radius: 12px;
   overflow: auto;
-  border: 2px solid rgba(0, 0, 0, 0.45);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='dark'] .markdown-body pre {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .markdown-body pre code {
-  padding: 0;
+  padding: 1em;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -117,48 +193,49 @@
   line-height: 1.6;
 }
 
+/* 表格：干净、发丝级分隔线、圆角 */
 .markdown-body table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
-  margin: 1.1em 0;
+  margin: 1.4em 0;
   font-size: 0.95em;
-  border: 2px solid rgba(0, 0, 0, 0.45);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+[data-theme='dark'] .markdown-body table {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .markdown-body th,
 .markdown-body td {
-  border: 2px solid rgba(0, 0, 0, 0.4);
-  padding: 0.5em 0.8em;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.6em 0.9em;
   text-align: left;
 }
 
+[data-theme='dark'] .markdown-body th,
+[data-theme='dark'] .markdown-body td {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .markdown-body th {
-  background: rgba(0, 88, 248, 0.15);
+  background: rgba(0, 113, 227, 0.06);
   font-weight: 600;
+}
+
+[data-theme='dark'] .markdown-body th {
+  background: rgba(41, 151, 255, 0.1);
 }
 
 .markdown-body hr {
   border: none;
-  border-top: 2px solid rgba(0, 0, 0, 0.3);
-  margin: 1.6em 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 2em 0;
 }
 
-/* 深色模式下的引用与表格微调（使用 NES 蓝） */
-[data-theme='dark'] .markdown-body blockquote {
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(0, 88, 248, 0.18);
-}
-
-[data-theme='dark'] .markdown-body th {
-  background: rgba(0, 88, 248, 0.22);
-}
-
-[data-theme='dark'] .markdown-body a {
-  color: #4d8bff;
-}
-
-/* 工具类：个别强调可用 Press Start 2P 像素块字 */
-.font-pixel {
-  font-family: 'Press Start 2P', monospace;
+[data-theme='dark'] .markdown-body hr {
+  border-top-color: rgba(255, 255, 255, 0.12);
 }

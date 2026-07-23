@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle.jsx';
+import { useThemeMode } from '../theme/ThemeModeProvider.jsx';
 
 const NAV_ITEMS = [
   { label: '首页', to: '/' },
@@ -14,16 +15,32 @@ const NAV_ITEMS = [
 
 /**
  * Top navigation bar: brand, primary links, and the theme toggle.
+ * Styled as a semi-transparent, frosted-glass bar (Apple-style).
  * The active link is highlighted based on the current location.
  */
 export default function NavBar() {
   const location = useLocation();
+  const { mode } = useThemeMode();
+
+  const isDark = mode === 'dark';
+  const glassBg = isDark ? 'rgba(29,29,31,0.72)' : 'rgba(251,251,253,0.72)';
+  const glassBorder = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
 
   const isActive = (to) =>
     to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
 
   return (
-    <AppBar position="sticky" color="primary" enableColorOnDark>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        background: glassBg,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: `1px solid ${glassBorder}`,
+        backgroundImage: 'none',
+      }}
+    >
       <Toolbar>
         <Typography
           variant="h6"
@@ -31,35 +48,39 @@ export default function NavBar() {
           to="/"
           sx={{
             textDecoration: 'none',
-            color: 'inherit',
-            fontWeight: 700,
+            color: 'text.primary',
+            fontWeight: 600,
             mr: 4,
             whiteSpace: 'nowrap',
-            // 像素卡带标题感：Latin/数字用 Press Start 2P，中文回退到点阵哥特 DotGothic16
-            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
-            // Press Start 2P 很占空间，整体调小以适配导航栏
-            fontSize: '0.85rem',
-            letterSpacing: '0.04em',
+            fontFamily:
+              '"Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+            fontSize: '1.05rem',
+            letterSpacing: '-0.01em',
             lineHeight: 1.2,
           }}
         >
           颜培志 · 博客
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 1, flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', gap: 0.5, flexGrow: 1 }}>
           {NAV_ITEMS.map((item) => (
             <Button
               key={item.to}
               component={RouterLink}
               to={item.to}
-              color="inherit"
               sx={{
                 textTransform: 'none',
-                fontWeight: isActive(item.to) ? 700 : 400,
+                color: 'text.primary',
+                fontWeight: isActive(item.to) ? 600 : 400,
+                borderRadius: 999,
+                px: 1.5,
+                opacity: isActive(item.to) ? 1 : 0.7,
                 borderBottom: isActive(item.to)
-                  ? '2px solid currentColor'
+                  ? '2px solid'
                   : '2px solid transparent',
-                borderRadius: 0,
+                borderColor: 'primary.main',
+                transition: 'opacity 0.2s ease',
+                '&:hover': { opacity: 1 },
               }}
             >
               {item.label}

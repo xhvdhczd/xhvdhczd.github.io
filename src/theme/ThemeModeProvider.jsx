@@ -34,48 +34,58 @@ function getInitialMode() {
 }
 
 /**
- * Build the MUI component overrides that give the UI its retro "NES" pixel look.
- * Only visual styling (hard edges, solid offset shadows, pixel borders) is
- * changed; component behavior and APIs are untouched.
+ * Build the MUI component overrides that give the UI its refined,
+ * Apple-style "premium minimal" look: soft layered shadows, hairline
+ * borders, and generous rounded corners. Only visual styling changes;
+ * component behavior and APIs are untouched.
  *
  * @param {'light' | 'dark'} mode - the active color mode
  * @return {Record<string, object>} MUI `components` override map
  */
-function buildPixelComponents(mode) {
-  // High-contrast dark ink used for borders in both modes (pure black on the
-  // dark background reads as a crisp cartridge edge).
-  const borderColor = mode === 'dark' ? '#000000' : '#1a1a1a';
+function buildSoftComponents(mode) {
+  const isDark = mode === 'dark';
+  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)';
+  const cardShadow = isDark
+    ? '0 4px 24px rgba(0,0,0,0.4)'
+    : '0 4px 24px rgba(0,0,0,0.06)';
+  const hoverShadow = isDark
+    ? '0 6px 20px rgba(0,0,0,0.45)'
+    : '0 6px 20px rgba(0,0,0,0.12)';
 
   return {
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
-          border: `3px solid ${borderColor}`,
-          boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.35)',
+          borderRadius: 14,
+          border: `1px solid ${borderColor}`,
+          boxShadow: cardShadow,
+          transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
-          // Light mode gets a visible ink border; dark mode relies on the
-          // paper/background contrast instead.
-          ...(mode === 'light' ? { border: '2px solid #1a1a1a' } : {}),
+          borderRadius: 14,
+          border: `1px solid ${borderColor}`,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
-          border: '2px solid currentColor',
-          boxShadow: '3px 3px 0 rgba(0, 0, 0, 0.3)',
-          // Pressed feel: shift the button down and shrink the offset shadow.
+          borderRadius: 10,
+          textTransform: 'none',
+          fontWeight: 500,
+          transition:
+            'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
+          '&:hover': {
+            transform: 'translateY(-1px)',
+            boxShadow: hoverShadow,
+          },
           '&:active': {
-            transform: 'translate(2px, 2px)',
-            boxShadow: '1px 1px 0 rgba(0, 0, 0, 0.3)',
+            transform: 'translateY(0)',
+            boxShadow: 'none',
           },
         },
       },
@@ -83,23 +93,36 @@ function buildPixelComponents(mode) {
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
-          border: '1px solid currentColor',
+          borderRadius: 999,
+          fontWeight: 500,
+          border: `1px solid ${borderColor}`,
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
-          borderBottom: `3px solid ${borderColor}`,
+          borderBottom: `1px solid ${borderColor}`,
+          boxShadow: 'none',
+          backgroundImage: 'none',
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 10,
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor,
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: isDark
+              ? 'rgba(255,255,255,0.22)'
+              : 'rgba(0,0,0,0.16)',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'primary.main',
+          },
         },
       },
     },
@@ -134,39 +157,41 @@ export function ThemeModeProvider({ children }) {
           mode,
           ...(mode === 'dark'
             ? {
-                primary: { main: '#0058F8' },
-                secondary: { main: '#E60012' },
-                warning: { main: '#FBD800' },
-                success: { main: '#00A651' },
-                background: { default: '#0d0d0d', paper: '#1a1a1a' },
-                text: { primary: '#FCFCFC' },
-                divider: '#333333',
+                primary: { main: '#2997ff' },
+                background: { default: '#000000', paper: '#1d1d1f' },
+                text: { primary: '#f5f5f7', secondary: '#a1a1a6' },
+                divider: 'rgba(255,255,255,0.12)',
               }
             : {
-                primary: { main: '#0058F8' },
-                secondary: { main: '#E60012' },
-                warning: { main: '#FBD800' },
-                success: { main: '#00A651' },
-                background: { default: '#FCFCFC', paper: '#FFFFFF' },
-                text: { primary: '#1a1a1a' },
-                divider: '#cccccc',
+                primary: { main: '#0071e3' },
+                background: { default: '#fbfbfd', paper: '#ffffff' },
+                text: { primary: '#1d1d1f', secondary: '#6e6e73' },
+                divider: 'rgba(0,0,0,0.08)',
               }),
         },
         typography: {
-          fontFamily: '"DotGothic16", "Press Start 2P", "Courier New", monospace',
+          fontFamily:
+            '"Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
           h1: {
-            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
             fontWeight: 700,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.15,
           },
           h2: {
-            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
             fontWeight: 600,
+            letterSpacing: '-0.015em',
+            lineHeight: 1.2,
+          },
+          h3: {
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            lineHeight: 1.25,
           },
         },
-        // Global hard-right-angle corners — the essence of the pixel look.
-        shape: { borderRadius: 0 },
-        // Retro NES pixel styling for the common MUI components.
-        components: buildPixelComponents(mode),
+        // Refined, premium rounded corners (no more hard right angles).
+        shape: { borderRadius: 10 },
+        // Soft, layered Apple-style component styling.
+        components: buildSoftComponents(mode),
       }),
     [mode]
   );

@@ -15,9 +15,11 @@ function renderHome() {
 }
 
 describe('HomePage', () => {
-  it('renders the page heading and the tag cloud entry', () => {
+  it('renders the page heading (brand hero) and the tag cloud entry', () => {
     renderHome();
-    expect(screen.getByText('文章列表')).toBeInTheDocument();
+    // The "大留白Hero" redesign replaced the old "文章列表" section heading
+    // with a brand hero title; assert the new intended heading.
+    expect(screen.getByText('颜培志 · 博客')).toBeInTheDocument();
     expect(screen.getByText('按标签浏览：')).toBeInTheDocument();
   });
 

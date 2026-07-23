@@ -34,8 +34,22 @@ export default function PostPage() {
   }
 
   return (
-    <Paper elevation={1} sx={{ p: { xs: 2, sm: 4 } }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Paper
+      elevation={0}
+      sx={{
+        p: { xs: 2, sm: 4 },
+        boxShadow: (theme) =>
+          theme.palette.mode === 'dark'
+            ? '0 4px 24px rgba(0,0,0,0.4)'
+            : '0 4px 24px rgba(0,0,0,0.06)',
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 1 }}
+        gutterBottom
+      >
         {post.title}
       </Typography>
       <Box
