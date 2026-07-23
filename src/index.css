@@ -239,3 +239,61 @@ a:hover {
 [data-theme='dark'] .markdown-body hr {
   border-top-color: rgba(255, 255, 255, 0.12);
 }
+
+/* ---------------------------------------------------------------------------
+ * 极光渐变背景（aurora mesh gradient）
+ * 在 body 的纯底色（浅 #fbfbfd / 深 #000000，由 MUI CssBaseline 设置）之上
+ * 叠加柔和的多色径向光斑，营造苹果产品页背后的高级极简氛围。
+ *
+ * - body::before 承载极光光斑：**不设置 background-color**，让 body 原有底色透出；
+ *   光斑全部置于边角，中心保持安静，保证正文与卡片清晰可读。
+ * - body::after 承载极细噪点：抑制渐变 banding、增加质感，opacity 仅 0.03 几乎不可见。
+ * 两层均为固定、铺满视口、不响应指针事件、置于 z-index:-1，不会覆盖任何正文/卡片。
+ * ------------------------------------------------------------------------- */
+
+/* 铺满视口所需的基准高度（fixed inset:0 已覆盖视口，此处为防御性兜底） */
+html,
+body {
+  min-height: 100%;
+}
+
+/* 极光光斑层：基础样式 + 主题专属配色 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 极细噪点层：抗渐变 banding + 质感，soft-light 混合使噪点融入底色 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: soft-light;
+  background-repeat: repeat;
+  background-size: 160px 160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 浅色：底色 #fbfbfd 透出，光斑置于四角、中心安静（alpha 克制） */
+[data-theme='light'] body::before {
+  background:
+    radial-gradient(60% 55% at 12% 8%,  rgba(0, 113, 227, 0.18),  transparent 60%),
+    radial-gradient(50% 50% at 88% 12%, rgba(175, 82, 222, 0.16),  transparent 60%),
+    radial-gradient(55% 50% at 80% 88%, rgba(255, 149, 0, 0.12),   transparent 60%),
+    radial-gradient(60% 55% at 18% 92%, rgba(48, 209, 88, 0.10),   transparent 60%);
+}
+
+/* 深色：底色 #000000 透出，光斑稍亮以在黑底上可见（仍保持克制） */
+[data-theme='dark'] body::before {
+  background:
+    radial-gradient(60% 55% at 12% 8%,  rgba(41, 151, 255, 0.22), transparent 60%),
+    radial-gradient(50% 50% at 88% 12%, rgba(175, 82, 222, 0.20), transparent 60%),
+    radial-gradient(55% 50% at 80% 88%, rgba(255, 55, 95, 0.14),  transparent 60%),
+    radial-gradient(60% 55% at 18% 92%, rgba(100, 210, 255, 0.12), transparent 60%);
+}
