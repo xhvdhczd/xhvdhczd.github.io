@@ -4,6 +4,9 @@ node_modules
 # Build output
 dist
 
+# Vite temporary config copies
+vite.config.js.timestamp-*.mjs
+
 # Logs
 *.log
 npm-debug.log*
