@@ -240,32 +240,27 @@ a:hover {
   border-top-color: rgba(255, 255, 255, 0.12);
 }
 
-/* ---------------------------------------------------------------------------
- * 极光渐变背景（aurora mesh gradient）
- * 在 body 的纯底色（浅 #fbfbfd / 深 #000000，由 MUI CssBaseline 设置）之上
- * 叠加柔和的多色径向光斑，营造苹果产品页背后的高级极简氛围。
- *
- * 极光光斑与极细噪点统一作为 body 的 background-image 叠在底色之上。
- * 之所以不用 body::before/::after + z-index:-1 的方案，是因为 body 自身的不透明
- * 背景色会在根层叠上下文中绘制于负 z-index 后代之后，从而把极光盖住（只看到白底）。
- * 本方案穿透透明的 Layout 内容区可见，且不覆盖任何正文/卡片。
- * ------------------------------------------------------------------------- */
-
 /* 铺满视口基准高度 */
 html,
 body {
   min-height: 100%;
 }
 
-/* 极光光斑 + 噪点统一作为 body 背景，叠在底色之上（不再用负 z-index 伪元素，
-   否则会被 body 自身不透明背景盖住）。透过透明的 Layout 内容区可见。*/
+/* 极光渐变背景（aurora mesh gradient）
+ * 关键修复：data-theme 由 JS 写在 <body> 自身上
+ *   (document.body.setAttribute('data-theme', mode))，
+ *   正确选择器是 `body[data-theme='xxx']`。
+ *   之前写成 `[data-theme='xxx'] body` 表示「带 data-theme 的祖先里的 body 子元素」，
+ *   但 body 在 DOM 中没有 body 后代，规则永远不命中 —— 这才是白底的真因。
+ *
+ * 做法：
+ *  - 浅色光斑无条件挂在 body（与 MUI CssBaseline 给 body 设的 background-color 是
+ *    不同 CSS 属性，互不覆盖），保证一定能显示；
+ *  - 深色用 body[data-theme='dark']（特异性 0,1,1，高于 MUI 的 body 0,0,1）覆盖为
+ *    深底 + 深亮光斑。 */
+
 body {
   background-attachment: fixed;
-}
-
-/* 浅色：底色 + 四角柔和光斑（alpha 克制）+ 极细噪点(soft-light 混合) */
-[data-theme='light'] body {
-  background-color: #fbfbfd;
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
     radial-gradient(60% 55% at 12% 8%,  rgba(0, 113, 227, 0.18), transparent 60%),
@@ -277,8 +272,7 @@ body {
   background-blend-mode: soft-light, normal, normal, normal, normal;
 }
 
-/* 深色：底色 + 稍亮光斑（黑底上仍可见）+ 极细噪点 */
-[data-theme='dark'] body {
+body[data-theme='dark'] {
   background-color: #000000;
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
