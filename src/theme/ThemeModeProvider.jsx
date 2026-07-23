@@ -34,6 +34,79 @@ function getInitialMode() {
 }
 
 /**
+ * Build the MUI component overrides that give the UI its retro "NES" pixel look.
+ * Only visual styling (hard edges, solid offset shadows, pixel borders) is
+ * changed; component behavior and APIs are untouched.
+ *
+ * @param {'light' | 'dark'} mode - the active color mode
+ * @return {Record<string, object>} MUI `components` override map
+ */
+function buildPixelComponents(mode) {
+  // High-contrast dark ink used for borders in both modes (pure black on the
+  // dark background reads as a crisp cartridge edge).
+  const borderColor = mode === 'dark' ? '#000000' : '#1a1a1a';
+
+  return {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          border: `3px solid ${borderColor}`,
+          boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.35)',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          // Light mode gets a visible ink border; dark mode relies on the
+          // paper/background contrast instead.
+          ...(mode === 'light' ? { border: '2px solid #1a1a1a' } : {}),
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          border: '2px solid currentColor',
+          boxShadow: '3px 3px 0 rgba(0, 0, 0, 0.3)',
+          // Pressed feel: shift the button down and shrink the offset shadow.
+          '&:active': {
+            transform: 'translate(2px, 2px)',
+            boxShadow: '1px 1px 0 rgba(0, 0, 0, 0.3)',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          border: '1px solid currentColor',
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          borderBottom: `3px solid ${borderColor}`,
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        },
+      },
+    },
+  };
+}
+
+/**
  * Provides the MUI theme (with light/dark modes) and exposes a context that
  * lets any component read the current mode and toggle it.
  *
@@ -59,19 +132,41 @@ export function ThemeModeProvider({ children }) {
       createTheme({
         palette: {
           mode,
-          primary: { main: '#1565c0' },
-          secondary: { main: '#00838f' },
-          background:
-            mode === 'light'
-              ? { default: '#f7f8fa', paper: '#ffffff' }
-              : { default: '#121212', paper: '#1e1e1e' },
+          ...(mode === 'dark'
+            ? {
+                primary: { main: '#0058F8' },
+                secondary: { main: '#E60012' },
+                warning: { main: '#FBD800' },
+                success: { main: '#00A651' },
+                background: { default: '#0d0d0d', paper: '#1a1a1a' },
+                text: { primary: '#FCFCFC' },
+                divider: '#333333',
+              }
+            : {
+                primary: { main: '#0058F8' },
+                secondary: { main: '#E60012' },
+                warning: { main: '#FBD800' },
+                success: { main: '#00A651' },
+                background: { default: '#FCFCFC', paper: '#FFFFFF' },
+                text: { primary: '#1a1a1a' },
+                divider: '#cccccc',
+              }),
         },
         typography: {
-          fontFamily: ['Roboto', 'system-ui', 'sans-serif'].join(','),
-          h1: { fontWeight: 700 },
-          h2: { fontWeight: 600 },
+          fontFamily: '"DotGothic16", "Press Start 2P", "Courier New", monospace',
+          h1: {
+            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
+            fontWeight: 700,
+          },
+          h2: {
+            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
+            fontWeight: 600,
+          },
         },
-        shape: { borderRadius: 10 },
+        // Global hard-right-angle corners — the essence of the pixel look.
+        shape: { borderRadius: 0 },
+        // Retro NES pixel styling for the common MUI components.
+        components: buildPixelComponents(mode),
       }),
     [mode]
   );

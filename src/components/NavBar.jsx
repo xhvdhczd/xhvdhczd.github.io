@@ -35,6 +35,12 @@ export default function NavBar() {
             fontWeight: 700,
             mr: 4,
             whiteSpace: 'nowrap',
+            // 像素卡带标题感：Latin/数字用 Press Start 2P，中文回退到点阵哥特 DotGothic16
+            fontFamily: '"Press Start 2P", "DotGothic16", monospace',
+            // Press Start 2P 很占空间，整体调小以适配导航栏
+            fontSize: '0.85rem',
+            letterSpacing: '0.04em',
+            lineHeight: 1.2,
           }}
         >
           颜培志 · 博客
