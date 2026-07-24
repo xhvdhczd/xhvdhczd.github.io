@@ -11,7 +11,7 @@ import TagChips from '../components/TagChips.jsx';
  * reverse-chronological post list.
  */
 export default function HomePage() {
-  const { posts, allTags } = usePosts();
+  const { posts, allTags, tagCounts } = usePosts();
 
   return (
     <Box>
@@ -57,7 +57,7 @@ export default function HomePage() {
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
             按标签浏览：
           </Typography>
-          <TagChips tags={allTags} />
+          <TagChips tags={allTags} variant="cloud" counts={tagCounts} />
         </Box>
       )}
 

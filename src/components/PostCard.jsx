@@ -49,6 +49,9 @@ export default function PostCard({ post }) {
           {post.date && (
             <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
               {post.date}
+              {typeof post.readingTime === 'number'
+                ? ` · 约 ${post.readingTime} 分钟阅读`
+                : ''}
             </Typography>
           )}
           {post.excerpt && (

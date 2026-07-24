@@ -1,0 +1,53 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant Router as React Router
+    participant PostPage
+    participant usePosts
+    participant MD as MarkdownRenderer
+    participant CB as CodeBlock
+    participant TOC as TocSidebar
+    participant RP as ReadingProgress
+    participant Nav as PostNavigation
+    participant Giscus
+
+    User->>Router: 访问 /post/:slug
+    Router->>PostPage: 渲染
+    PostPage->>usePosts: getPostBySlug(slug)
+    usePosts-->>PostPage: post
+    PostPage->>usePosts: getPrevNext(slug) / getRelated(slug)
+    usePosts-->>PostPage: {prev,next,related}
+    PostPage->>MD: content = post.content
+    MD->>MD: remark-math → rehype-katex（公式）
+    MD->>MD: rehype-slug（标题 id）
+    MD->>MD: rehypeLineNumbers（每行 hl-line）
+    MD->>CB: components 覆盖 pre/code（复制/文件名栏）
+    MD-->>PostPage: 渲染后 JSX
+    PostPage->>TOC: items = extractToc(post.content)
+    TOC-->>PostPage: 右侧悬浮 TOC（scroll-spy）
+    PostPage->>RP: 监听 scroll
+    RP-->>PostPage: 顶部进度条（%）
+    PostPage->>Nav: prev/next/related
+    Nav-->>PostPage: 底部导航
+    PostPage->>Giscus: enabled? 动态加载 script
+    Giscus-->>PostPage: 评论区（未配置则隐藏）
+    PostPage-->>User: 完整详情页
+
+    Note over Vite,Vite: 构建期（独立流程）
+    participant Vite as vite build
+    participant Plugin as feedsPlugin(writeBundle)
+    participant FS as fs
+    participant Gen as FeedsGenerator
+    participant Dist as dist/
+
+    Vite->>Plugin: writeBundle 钩子触发
+    Plugin->>FS: 读取 src/content/*.md
+    FS-->>Plugin: raw markdown 列表
+    Plugin->>Gen: readPostsFromDisk() + parseFrontmatter
+    Gen-->>Plugin: posts[]
+    Plugin->>Gen: generateRss(posts, SITE_URL)
+    Gen-->>Plugin: feed.xml 字符串
+    Plugin->>Dist: writeFile('dist/feed.xml')
+    Plugin->>Gen: generateSitemap(posts, SITE_URL)
+    Gen-->>Plugin: sitemap.xml 字符串
+    Plugin->>Dist: writeFile('dist/sitemap.xml')

@@ -1,11 +1,16 @@
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import SearchIcon from '@mui/icons-material/Search';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle.jsx';
 import { useThemeMode } from '../theme/ThemeModeProvider.jsx';
+import SearchDialog from './SearchDialog.jsx';
 
 const NAV_ITEMS = [
   { label: '首页', to: '/' },
@@ -21,6 +26,7 @@ const NAV_ITEMS = [
 export default function NavBar() {
   const location = useLocation();
   const { mode } = useThemeMode();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const isDark = mode === 'dark';
   const glassBg = isDark ? 'rgba(29,29,31,0.72)' : 'rgba(251,251,253,0.72)';
@@ -89,6 +95,19 @@ export default function NavBar() {
         </Box>
 
         <ThemeToggle />
+
+        <Tooltip title="搜索文章">
+          <IconButton
+            onClick={() => setSearchOpen(true)}
+            color="inherit"
+            aria-label="搜索文章"
+            sx={{ color: 'text.primary', ml: 0.5 }}
+          >
+            <SearchIcon />
+          </IconButton>
+        </Tooltip>
+
+        <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       </Toolbar>
     </AppBar>
   );

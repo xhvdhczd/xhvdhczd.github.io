@@ -1,0 +1,139 @@
+classDiagram
+    class Post {
+        +string slug
+        +string title
+        +string date
+        +string[] tags
+        +string excerpt
+        +string content
+        +number wordCount
+        +number readingTime
+    }
+
+    class SiteConfig {
+        <<const>>
+        +string SITE_URL
+        +string SITE_TITLE
+        +string SITE_DESCRIPTION
+        +string OG_IMAGE
+    }
+
+    class GiscusConfig {
+        +boolean enabled
+        +string repo
+        +string repoId
+        +string category
+        +string categoryId
+        +string lang
+    }
+
+    class usePosts {
+        +Post[] posts
+        +string[] allTags
+        +Map~string,number~ tagCounts
+        +getPostBySlug(slug) Post
+        +getPostsByTag(tag) Post[]
+        +getPrevNext(slug) ~prev: Post, next: Post~
+        +getRelated(slug, limit) Post[]
+    }
+
+    class ReadingStats {
+        +compute(content) ~wordCount: number, readingTime: number~
+    }
+
+    class TocExtractor {
+        +extract(content) TocItem[]
+    }
+
+    class TocItem {
+        +string id
+        +string text
+        +number depth
+    }
+
+    class SearchIndex {
+        +Fuse fuse
+        +build(posts) void
+        +query(q) Post[]
+    }
+
+    class FeedsGenerator {
+        +readPostsFromDisk() Post[]
+        +generateRss(posts, site) string
+        +generateSitemap(posts, site) string
+    }
+
+    class MarkdownRenderer {
+        +string content
+        +render() JSX
+    }
+
+    class CodeBlock {
+        +pre(props) JSX
+        +code(props) JSX
+    }
+
+    class rehypeLineNumbers {
+        <<rehype plugin>>
+    }
+
+    class PostPage {
+        +string slug
+        +render() JSX
+    }
+
+    class TocSidebar {
+        +TocItem[] items
+        +render() JSX
+    }
+
+    class ReadingProgress {
+        +render() JSX
+    }
+
+    class PostNavigation {
+        +Post prev
+        +Post next
+        +Post[] related
+        +render() JSX
+    }
+
+    class GiscusComments {
+        +render() JSX
+    }
+
+    class SearchDialog {
+        +boolean open
+        +render() JSX
+    }
+
+    class NavBar {
+        +render() JSX
+    }
+
+    class TagChips {
+        +string[] tags
+        +string variant
+        +Map~string,number~ counts
+        +render() JSX
+    }
+
+    usePosts ..> Post : produces
+    usePosts ..> ReadingStats : uses
+    TocExtractor ..> TocItem : produces
+    SearchIndex ..> Post : indexes
+    FeedsGenerator ..> Post : reads
+    FeedsGenerator ..> SiteConfig : uses
+    MarkdownRenderer ..> CodeBlock : delegates
+    MarkdownRenderer ..> rehypeLineNumbers : uses
+    PostPage ..> MarkdownRenderer : renders
+    PostPage ..> TocSidebar : shows
+    PostPage ..> ReadingProgress : shows
+    PostPage ..> PostNavigation : shows
+    PostPage ..> GiscusComments : shows
+    PostPage ..> usePosts : queries
+    TocSidebar ..> TocItem : receives
+    PostNavigation ..> usePosts : queries
+    SearchDialog ..> SearchIndex : queries
+    GiscusComments ..> GiscusConfig : reads
+    NavBar ..> SearchDialog : opens

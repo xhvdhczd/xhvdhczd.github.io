@@ -284,3 +284,115 @@ body[data-theme='dark'] {
   background-size: 160px 160px, auto, auto, auto, auto;
   background-blend-mode: soft-light, normal, normal, normal, normal;
 }
+
+/* ===========================================================================
+ * 功能增强追加样式（仅追加，未改动上方极光背景两段）
+ *  - 代码块外壳（文件名标题栏 + 复制按钮 + 行号列）
+ *  - KaTeX 公式微调
+ *  - 阅读进度条（组件内使用）
+ * 色彩一律引用 MUI palette 或 CSS 变量理念，不写死会破坏深/浅切换的色值；
+ *   代码块因 atom-one-dark 高亮主题本身带固定底色，故外壳底色用其同款深底。
+ * ========================================================================= */
+
+/* 代码块外壳：包裹「标题栏 + 行号 + 代码」，接管原 pre 的外框 */
+.code-block {
+  margin: 1.4em 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  background: #282c34; /* atom-one-dark 底色，避免 hljs 未着色时露白 */
+}
+
+[data-theme='dark'] .code-block {
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* 文件名标题栏 */
+.code-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+}
+
+.code-filename {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #c8ccd4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-copy {
+  color: #c8ccd4 !important;
+  padding: 4px !important;
+}
+
+.code-copy:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 代码主体：行号列（左）+ 代码区（右） */
+.code-body {
+  display: flex;
+  align-items: stretch;
+}
+
+.code-gutter {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1em 0.6em 1em 1em;
+  text-align: right;
+  user-select: none;
+  background: rgba(0, 0, 0, 0.20);
+  color: rgba(255, 255, 255, 0.32);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.88em;
+  line-height: 1.6;
+}
+
+.code-gutter > span {
+  display: block;
+}
+
+/* 内部 pre：去掉自身外框/边距，横向滚动由它承载，行号列不随滚动 */
+.code-pre {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  flex: 1 1 auto;
+}
+
+/* KaTeX 公式微调：避免行内公式撑破行高，块级公式可横向滚动 */
+.markdown-body .katex {
+  font-size: 1.05em;
+}
+
+.markdown-body .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4em 0;
+}
+
+/* 阅读进度条（组件内使用 .reading-progress 定位） */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 1200;
+  pointer-events: none;
+}

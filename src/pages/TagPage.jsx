@@ -13,7 +13,7 @@ import TagChips from '../components/TagChips.jsx';
  */
 export default function TagPage() {
   const { tag } = useParams();
-  const { allTags, getPostsByTag } = usePosts();
+  const { allTags, getPostsByTag, tagCounts } = usePosts();
 
   // Overview mode: list every tag as a clickable chip cloud.
   if (!tag) {
@@ -25,7 +25,12 @@ export default function TagPage() {
         {allTags.length === 0 ? (
           <Typography color="text.secondary">暂无标签。</Typography>
         ) : (
-          <TagChips tags={allTags} size="medium" />
+          <TagChips
+            tags={allTags}
+            size="medium"
+            variant="cloud"
+            counts={tagCounts}
+          />
         )}
       </Box>
     );
